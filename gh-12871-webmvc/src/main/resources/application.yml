@@ -1,0 +1,43 @@
+scheme: http
+keycloak-port: 8442
+keycloak-issuer: ${scheme}://localhost:${keycloak-port}/realms/master
+keycloak-secret: change-me
+
+client-uri: ${scheme}://localhost:${server.port}
+
+server:
+  port: 8080
+  ssl:
+    enabled: false
+
+
+spring:
+  lifecycle:
+    timeout-per-shutdown-phase: 30s
+  security:
+    oauth2:
+      client:
+        provider:
+          keycloak:
+            issuer-uri: ${keycloak-issuer}
+        registration:
+          keycloak-confidential-user:
+            authorization-grant-type: authorization_code
+            client-name: Keycloak
+            client-id: spring-addons-confidential
+            client-secret: ${keycloak-secret}
+            provider: keycloak
+            scope: openid,profile,email,offline_access,roles
+
+---
+spring:
+  config:
+    activate:
+      on-profile: ssl
+
+server:
+  ssl:
+    enabled: true
+
+scheme: https
+keycloak-port: 8443
